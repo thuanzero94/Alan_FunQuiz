@@ -32,5 +32,16 @@
             android:text="@string/false_button"
             android:textAllCaps="false" />
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/Btn_Next"
+            android:text="@string/next_button"
+            android:textAllCaps="false"/>
+    </LinearLayout>
 
 </LinearLayout>
