@@ -41,7 +41,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/Btn_Next"
             android:text="@string/next_button"
-            android:textAllCaps="false"/>
+            android:textAllCaps="false"
+            android:drawableRight="@drawable/arrow_right"
+            android:drawablePadding="4dp"/>
     </LinearLayout>
 
 </LinearLayout>
