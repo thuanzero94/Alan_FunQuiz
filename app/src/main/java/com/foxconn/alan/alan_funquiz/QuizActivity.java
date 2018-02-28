@@ -1,5 +1,7 @@
 package com.foxconn.alan.alan_funquiz;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,11 +15,13 @@ import android.widget.Toast;
 public class QuizActivity extends AppCompatActivity {
     private static final String TAG = QuizActivity.class.getSimpleName();
     private static final String KEY_INDEX = "index";
+    private static final int REQUEST_CODE_CHEAT = 0;
 
     private Button mBtnTrue;
     private Button mBtnFalse;
     private ImageButton mBtnNext;
     private TextView mQuestTextView;
+    private Button mBtnCheat;
 
     private Question[] mQuestionBank = new Question[] {
             new Question(R.string.question_africa, false),
@@ -28,6 +32,7 @@ public class QuizActivity extends AppCompatActivity {
     };
 
     private int mCurrentIndex = 0;
+    private boolean mIsCheater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +43,7 @@ public class QuizActivity extends AppCompatActivity {
         mBtnTrue = (Button) findViewById(R.id.Btn_true);
         mBtnFalse = (Button) findViewById(R.id.Btn_false);
         mBtnNext = (ImageButton) findViewById(R.id.Btn_Next);
+        mBtnCheat = (Button) findViewById(R.id.Btn_cheat);
 
         mQuestTextView = (TextView) findViewById(R.id.text_question);
 
@@ -47,6 +53,21 @@ public class QuizActivity extends AppCompatActivity {
 
         setOnClickListener();
         updateQuestion();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+
+        if (requestCode == REQUEST_CODE_CHEAT) {
+            if (data == null) {
+                return;
+            }
+            mIsCheater = CheatActivity.wasAnswerShown(data);
+        }
+
     }
 
     @Override
@@ -88,33 +109,45 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void setOnClickListener(){
+        //True Button
         mBtnTrue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 checkAnswer(true);
             }
         });
-
+        //False button
         mBtnFalse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 checkAnswer(false);
             }
         });
-
+        //Next Button
         mBtnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                mIsCheater = false;
                 updateQuestion();
             }
         });
-
+        //TextView for next
         mQuestTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                mIsCheater = false;
                 updateQuestion();
+            }
+        });
+        //Cheat button
+        mBtnCheat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+                Intent i = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
+                startActivityForResult(i, REQUEST_CODE_CHEAT);
             }
         });
     }
@@ -126,11 +159,14 @@ public class QuizActivity extends AppCompatActivity {
 
     private void checkAnswer(boolean userPressedTrue){
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
-
-        if(userPressedTrue == answerIsTrue){
-            alanMakeToast(R.string.correct_toast);
-        } else {
-            alanMakeToast(R.string.incorrect_toast);
+        if(mIsCheater) {
+            alanMakeToast(R.string.judgment_toast);
+        }else {
+            if (userPressedTrue == answerIsTrue) {
+                alanMakeToast(R.string.correct_toast);
+            } else {
+                alanMakeToast(R.string.incorrect_toast);
+            }
         }
 
     }
