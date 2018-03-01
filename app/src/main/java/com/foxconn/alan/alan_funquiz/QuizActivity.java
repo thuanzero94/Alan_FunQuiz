@@ -15,6 +15,7 @@ import android.widget.Toast;
 public class QuizActivity extends AppCompatActivity {
     private static final String TAG = QuizActivity.class.getSimpleName();
     private static final String KEY_INDEX = "index";
+    private static final String IS_CHEATER = "isCheater";
     private static final int REQUEST_CODE_CHEAT = 0;
 
     private Button mBtnTrue;
@@ -49,6 +50,7 @@ public class QuizActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mIsCheater = savedInstanceState.getBoolean(IS_CHEATER, false);
         }
 
         setOnClickListener();
@@ -75,6 +77,7 @@ public class QuizActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceState.putBoolean(IS_CHEATER, mIsCheater);
     }
 
     @Override
@@ -146,7 +149,7 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
-                Intent i = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
+                Intent i = CheatActivity.newIntent(QuizActivity.this, answerIsTrue, mIsCheater);
                 startActivityForResult(i, REQUEST_CODE_CHEAT);
             }
         });
